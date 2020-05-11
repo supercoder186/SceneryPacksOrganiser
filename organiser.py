@@ -117,3 +117,5 @@ f.writelines(orthotiles)
 f.flush()
 f.close()
 print('Done!')
+
+input('Press enter to close')
