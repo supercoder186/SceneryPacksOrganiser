@@ -1,10 +1,13 @@
 from os import walk, rename, remove
 from os.path import join, isfile, exists
+import time
 
 xplane_path = input('Enter the path to the X-Plane folder: ')
 scenery_path = join(xplane_path, 'Custom Scenery')
 SCENERY_PACK_CONST = 'SCENERY_PACK Custom Scenery/'
 FILE_BEGIN_CONST = 'I\n1000 Version\nSCENERY\n\n'
+
+now = time.time()
 
 
 def list_directory_dirs(directory):
@@ -117,5 +120,5 @@ f.writelines(orthotiles)
 f.flush()
 f.close()
 print('Done!')
-
+print("Took", time.time() - now, 'seconds')
 input('Press enter to close')
