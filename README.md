@@ -21,7 +21,7 @@ The script is very fast, and I can guarantee that you have an atrociously high a
 
 (My system took under 1 second)
 
-There is no real installation process. Simply download and unzip the file, then double click to run. 
+There is no real installation process. Simply download and unzip the file, then double click to run. On some Linux distributions, you may need to use the command line to run, like so: `python organiser.py`
 
 Requirements:
 

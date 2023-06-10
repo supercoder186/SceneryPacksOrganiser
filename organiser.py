@@ -76,7 +76,7 @@ def isOverlay(directory):
 # Check if something is a default airport. If the directory is named Global Airports or contains Aerosoft, then it is
 # considered a default airport
 def isDefaultAirport(directory):
-    return directory == 'Global Airports' or 'Aerosoft' in directory
+    return directory == 'Global Airports' or 'Aerosoft' or 'Demo Area' or 'X-Plane Airports' in directory
 
 
 # Check if something is a custom airport. If it has a navdata folder and an apt.dat file, then it is considered an
@@ -126,6 +126,15 @@ def processDir(directory, inMainFolder=True):
 
 # List all directories in the Custom Scenery folder
 custom_scenery_dir = list_directory_dirs(scenery_path)
+
+# Move Global Airports to the end so as to not override demo areas, also check whether we need to add *GLOBAL_AIRPORTS* entry for XP12
+try:
+    gl_apt = custom_scenery_dir.pop(custom_scenery_dir.index('Global Airports'))
+    custom_scenery_dir.append(gl_apt)
+    xp12 = False
+except ValueError:
+    xp12 = True
+
 orthotiles = []
 libraries = []
 overlays = []
@@ -133,7 +142,7 @@ defaultairports = []
 airports = []
 plugins = []
 
-print('Reading directory...')
+print('Reading directory')
 
 # Process each directory in the Custom Scenery folder
 for obj in custom_scenery_dir:
@@ -145,14 +154,18 @@ for shortcut in custom_scenery_dir:
     scenery_pack_dir = read_shortcut_target(shortcut)
     processDir(scenery_pack_dir, inMainFolder=False)
 
+# Add Global Airports entry for XP12
+if xp12:
+    defaultairports.append(f"{SCENERY_PACK_CONST}*GLOBAL_AIRPORTS*\n")
+
 print('All packs classified, except those specified otherwise')
 
 scenery_packs_file_path = join(scenery_path, 'scenery_packs.ini')
-scenery_packs_bkp_file_path = scenery_packs_file_path + '.bkp'
+scenery_packs_bkp_file_path = scenery_packs_file_path + '.bak'
 
 # Remove the old backup file, if present
 if exists(scenery_packs_bkp_file_path):
-    print('Removing old backup file...')
+    print('Removing old backup file')
     remove(scenery_packs_bkp_file_path)
 
 # Back up the current scenery_packs.ini file
