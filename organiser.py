@@ -178,14 +178,7 @@ if exists(scenery_packs_file_path):
     rename(scenery_packs_file_path, scenery_packs_bkp_file_path)
 
 # Write out the new scenery_packs.ini file
-print('Writing new scenery_packs.ini file')
-
-debug = {'airports:':airports,'defaultairports:':defaultairports,'plugins:':plugins,'libraries:':libraries,'overlays:':overlays,'ortho:':orthotiles}
-for i in debug:
-    lst = debug[i]
-    print(i)
-    for j in lst:
-        print(f"    {j.strip()}")
+print('Writing new scenery_packs.ini file'
 
 f = open(scenery_packs_file_path, 'w+')
 f.write(FILE_BEGIN_CONST)
