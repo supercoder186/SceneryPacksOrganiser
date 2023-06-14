@@ -76,7 +76,9 @@ def isOverlay(directory):
 # Check if something is a default airport. If the directory is named Global Airports or contains Aerosoft, then it is
 # considered a default airport
 def isDefaultAirport(directory):
-    return directory == 'Global Airports' or 'Aerosoft' or 'Demo Area' or 'X-Plane Airports' in directory
+    for i in ['Global Airports','Aerosoft','Demo Area','X-Plane Airports']:
+        if i in directory:
+            return True
 
 
 # Check if something is a custom airport. If it has a navdata folder and an apt.dat file, then it is considered an
@@ -127,7 +129,7 @@ def processDir(directory, inMainFolder=True):
 # List all directories in the Custom Scenery folder
 custom_scenery_dir = list_directory_dirs(scenery_path)
 
-# Move Global Airports to the end so as to not override demo areas, also check whether we need to add *GLOBAL_AIRPORTS* entry for XP12
+# Move Global Airports to the end so as to not override demo areas, also check to inject *GLOBAL_AIRPORTS* for XP12
 try:
     gl_apt = custom_scenery_dir.pop(custom_scenery_dir.index('Global Airports'))
     custom_scenery_dir.append(gl_apt)
@@ -154,7 +156,9 @@ for shortcut in custom_scenery_dir:
     scenery_pack_dir = read_shortcut_target(shortcut)
     processDir(scenery_pack_dir, inMainFolder=False)
 
-# Add Global Airports entry for XP12
+print('All packs classified, except those specified otherwise')
+
+# Inject Global Airports for XP12 if needed
 if xp12:
     defaultairports.append(f"{SCENERY_PACK_CONST}*GLOBAL_AIRPORTS*\n")
 
@@ -175,6 +179,14 @@ if exists(scenery_packs_file_path):
 
 # Write out the new scenery_packs.ini file
 print('Writing new scenery_packs.ini file')
+
+debug = {'airports:':airports,'defaultairports:':defaultairports,'plugins:':plugins,'libraries:':libraries,'overlays:':overlays,'ortho:':orthotiles}
+for i in debug:
+    lst = debug[i]
+    print(i)
+    for j in lst:
+        print(f"    {j.strip()}")
+
 f = open(scenery_packs_file_path, 'w+')
 f.write(FILE_BEGIN_CONST)
 f.writelines(airports)
