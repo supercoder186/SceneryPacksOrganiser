@@ -1,39 +1,59 @@
-# Scenery Pack Organiser XP10/11/12
+# Scenery Pack Organiser - XP10/11/12
 
 Are you tired of sifting through all the packs in the Custom Scenery folder and reordering them manually?\
-Do you hate having to start X-Plane and quit just to add new scenery packs to the file so you can reorganise it?\
-This simple script is for you!
+Do you hate having to start and quit X-Plane just to add new scenery packs to the file so you can organise it?\
+This utility is for you!\
+<br>
+It will read and sort all scenery packs, carry over DISABLED tags, check for airport conflicts, and even warn you of faulty packages!
 
 
 ## Installation
-Whether you use the .py script or standalone executable version, you can store the program anywhere you'd like.
+You are given a choice between using the Python script or the standalone executables.\
+The Python script lets you see and edit the code to suit your needs, but requires you to have additional software (namely Python and PIP) installed.\
+The executable, on the other hand, does not require any additional software. This is ideal for users who do not have Python installed or are facing problems with Python.\
+Regardless of which one you use, you can store the program anywhere you'd like.
 ### Script (.py) version
-- You need to have Python3 installed. [You can get it here for all platforms](https://www.python.org/downloads/).
-    - [For macOS, you can also use Homebrew](https://docs.python-guide.org/starting/install3/osx/).
-    - For Linux, you can also use your distro's package manager.
-- You need to have PIP installed. To check, open Command Prompt or Terminal and do `pip --version`
+- You need to have Python3 installed. [You can get it here for all platforms](https://www.python.org/downloads/)
+    - [For macOS, you can also use Homebrew](https://docs.python-guide.org/starting/install3/osx/)
+    - For Linux, you can also use your distro's package manager
+- You need to have PIP installed
+    - On Windows, PIP is automatically installed with Python3
+    - On macOS, it might differ depending on how you installed Python
+    - On Linux, you may need to install a separate package
+- Make sure both Python3 and PIP are added to PATH
+    - On Windows, this is done by ticking the option in the installer
+    - To check on Windows, open Command Prompt and do `python --version` and `pip --version`
+    - To check on macOS and Linux, open Terminal and do `python3 --version` and `pip --version`
+<br>
 
-Make sure both Python3 and PIP are added to PATH.\
 If you have something more elaborate set up, please ensure the following libraries are available: `glob locale os pathlib pkg_resources struct sys time`, and also `pywin32` if you're on Windows.
+
+
 ### Standalone executable
-You do not need anything installed on your system (not even Python) if you're using the standalone executable. Simply download the one for your OS.\
+You do not need any additional software installed (ie. Python and PIP) on your system if you want to use the standalone executable. Simply download the one for your OS.\
 Currently, only Windows and Linux executables are available. macOS executables and CLI install options are coming soon.
 
 
 ## Usage
 ### How to run
-- On Windows, you can simply doubleclick the program. This works for both the .exe and the .py script.
-- On macOS, you will need to open Terminal in the folder you have the program stored. 
-    - If you're using the .py script, do `python organiser_v2.0b4.py`
-    - mac standalone executables are coming soon
-- On Linux, you will need to open Terminal in the folder you have the program stored.
+- On Windows, you can simply doubleclick the program. This works for both the .exe and the .py script
+- On macOS, you will need to open Terminal in the folder you have the program stored.
+    - If you're using the .py script, do `python3 organiser_v2.0b4.py`
+    - Mac standalone executables are coming soon
+- On Linux, you will need to open Terminal in the folder you have the program stored
     - If you're using the .py script, do `python3 organiser_v2.0b4.py`
     - If you're using the executable, do `./organiser_v2.0b4`
-### Prompts and responses
-At various stages, the program might ask you for input. Here I'll go through them in order and explain each one.
-1. The program will try to automatically locate X-Plane. It will list out all locations it finds. To use one of those, enter the serial number as displayed in the list. If this doesn't work or if you want to use a different location, simply paste the path from your file explorer. **Do not format it as a shell path (eg. wrapping it in quotes, escaping backslashes)**
-2. If you had disabled some scenery packs in your old scenery_packs.ini, the program will offer to retain those in the new ini. You can respond with yes/no or y/n.
-3. The program checks for conflicts in your Custom Airports (based on their ICAO codes). If it find any, it will tell you the ICAO code, and will list the Airport name and its folder name. To resolve it, enter the serial numbers as shown in the list in descending order of priority (highest first, lowest last).
+
+
+### How to use
+At various stages, the program might ask you for input. Here, I'll go through them in order and explain each one.
+1. The program will try to automatically locate X-Plane. It will list out all locations it finds. To use one of those, enter the serial number as displayed in the list.\
+If this doesn't work, or if you want to use a different location, simply paste the path from your file explorer. **Do not format it as a shell path (eg. wrapping it in quotes, escaping whitespaces and backslashes, etc)**
+2. If you had disabled some scenery packs in your old scenery_packs.ini, the program will offer to retain those in the new ini. You can respond with yes/no or y/n
+3. The program checks for conflicts in your Custom Airports (based on their ICAO codes). If it finds any, it will tell you the ICAO code and list the airport names and their folder names.\
+To resolve the conflict, enter the serial numbers as shown in the list in descending order of priority (highest first, lowest last), and the program will write them in that order
+- If an existing `scenery_packs.ini` is found, it will be renamed to `scenery_packs.ini.bak`. Old backup files will be removed upon completion of the script.\
+To roll back, simply drop the `.bak` extension
 
 
 ## Features
@@ -51,7 +71,7 @@ At various stages, the program might ask you for input. Here I'll go through the
 - Supports Windows shortcuts (.LNK files, eg. for SAM Library)
 - Supports [Prefab Airports](https://forums.x-plane.org/index.php?/files/file/27582-prefab-scenery-for-25000-airports/) (requires you to retain "prefab" somewhere in the folder name for it to work)
 - Attempts to locate X-Plane installs automatically, letting you choose between the results or manually inputting an X-Plane install path
-- Offers to carry over SCENERY_PACK_DISABLED from existing scenery_packs.ini
+- Offers to carry over SCENERY_PACK_DISABLED tags from existing scenery_packs.ini
 - Checks for Custom Airport conflicts and resolves them with user input
 - Will warn you of folders-in-folder (It's more common than you'd think)
 - Supports XP10/11's and XP12's Global Airports entry simultaneously
