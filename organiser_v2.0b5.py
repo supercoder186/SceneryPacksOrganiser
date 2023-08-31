@@ -20,7 +20,7 @@ if sys.platform == "win32":
 
 
 # State version
-print("Scenery Pack Organiser version 2.0b4\n")
+print("Scenery Pack Organiser version 2.0b5\n")
 
 
 # DEF: Expand shell paths to absolute paths
@@ -63,7 +63,7 @@ if search_path:
 if install_locations:
     print("I found the following X-Plane installs:")
     for i in range(len(install_locations)):
-        print(f"{i}: {install_locations[i][0]} at '{install_locations[i][1]}'")
+        print(f"    {i}: {install_locations[i][0]} at '{install_locations[i][1]}'")
     print("If you would like to use one of these paths, enter its serial number as displayed in the above list.")
     print("Otherwise, paste the filepath in as normal.")
     choice = input("Enter your selection here: ")
@@ -92,6 +92,8 @@ airport_registry = {}
 disable_registry = {}
 disable_choice = None
 measure_time = []
+unsorted_registry = []
+unparsed_registry = []
 customairports = []
 defaultairports = []
 prefabairports = []
@@ -106,14 +108,14 @@ meshes = []
 
 # Validate given path
 if not SCENERY_PATH.is_dir():
-    print("\nI could not find a Custom Scenery directory here. Perhaps a broken or deleted install?")
+    print(f"\nI could not find a Custom Scenery directory at {str(xplane_path)}. Perhaps a broken or deleted install?")
     input("No changes have been made to your files. Press enter to close")
     exit()
 
 # Read old ini and store disabled packs. Ask user if they want to carry them forward
 ini_path = SCENERY_PATH / "scenery_packs.ini"
 if ini_path.is_file():
-    ini_file = open(ini_path, "r")
+    ini_file = open(ini_path, "r", encoding = "utf-8")
     for line in ini_file.readlines():
         for disabled in [FILE_DISAB_LINE_REL, FILE_DISAB_LINE_ABS]:
             if line.startswith(disabled):
@@ -121,17 +123,17 @@ if ini_path.is_file():
                 break
     ini_file.close()
     if disable_registry:
-        print("I see you've disabled some packs in the current scenery_packs.ini")
+        print("\nI see you've disabled some packs in the current scenery_packs.ini")
         disable_choice = input("Would you like to carry over the DISABLED tags to the new ini? (yes/no or y/n): ").lower()
         if disable_choice in ["y","yes"]:
             print("Ok, I will carry over whatever is possible to the new ini.")
             disable_choice = True
-        elif disable_choice in ["y","yes"]:
+        elif disable_choice in ["n","no"]:
             print("Ok, I will not carry over any of the old DISABLED tags.")
             disable_registry = {}
             disable_choice = False
         else:
-            print(f"Sorry, I didn't understand. I'm assuming you meant no.")
+            print(f"Sorry, I didn't understand. I'm assuming you meant no. I will therefore not carry over any of the old DISABLED tags.")
             disable_registry = {}
             disable_choice = False
 
@@ -140,7 +142,7 @@ if ini_path.is_file():
 measure_time.append(time.time())
 
 # Store the results of os.walk() from the Custom Scenery directory so we don't make a bunch of unnecessary calls
-print("\n\nI will now scan the Custom Scenery folder...")
+print("\nI will now scan the Custom Scenery folder...")
 measure_time.append(time.time())
 WALK = tuple(os.walk(SCENERY_PATH))
 print(f"Took me {time.time() - measure_time.pop()} seconds to scan.")
@@ -231,7 +233,12 @@ def isAirport(dirpath:pathlib.Path, dirname:str, file_line:str):
         return None
     if apt_path and dirname == "Global Airports": 
         return "Global"
-    apt_file = open(apt_path, "r")
+    for codec in ('utf-8', 'charmap', 'cp1252', 'cp850'):
+        try:
+            apt_file = open(apt_path, "r", encoding = codec)
+            break
+        except:
+            pass
     apt_type = None
     for line in apt_file.readlines():
         if line.startswith("1 ") or line.startswith("16 ") or line.startswith("17 "):
@@ -346,41 +353,57 @@ def processType(path, shortcut = False):
             plugins.append(line)
             sorted = True
     if not sorted:
-        print(f"\nI was unable to classify {path}")
-        print("Perhaps a folder-in-folder? If this a valid pack, paste the following line into the file:")
-        print(line.strip("\n"))
+        unsorted_registry.append(line)
      
 
-print("\n\nI will now classify each scenery pack...")
+print("\nI will now classify each scenery pack...")
 measure_time.append(time.time())
 
+
 # Process each directory in the Custom Scenery folder
+maxlength = 0
 for directory in WALK[0][1]:
+    progress_str = f"Processing: {directory}"
+    if len(progress_str) <= maxlength:
+        progress_str = f"{progress_str}{' ' * (maxlength - len(progress_str))}"
+    else:
+        maxlength = len(progress_str)
+    print(f"\r{progress_str}", end = "\r")
     processType(directory)
+sys.stdout.write("\033[K")
 
 # Process each Windows shortcut in the Custom Scenery folder
 shtcut_list = glob.glob(str(SCENERY_PATH / "*.lnk"))
 if shtcut_list and sys.platform != "win32":
-    print(f"\n\nI found Windows .LNK shortcuts, but I'm not on Windows! Detected platform: {sys.platform}")
+    print(f"\nI found Windows .LNK shortcuts, but I'm not on Windows! Detected platform: {sys.platform}")
     print("I will still attempt to read them, but I cannot guarantee anything. I would suggest you use symlinks instead.")
 elif shtcut_list and sys.platform == "win32":
-    print("\n\nReading .LNK shortcuts...")
+    print("\nReading .LNK shortcuts...")
+maxlength = 0
+printed = False
 for shtcut_path in shtcut_list:
     try:
         folder_path = read_shortcut_target(shtcut_path)
         if folder_path.exists():
+            progress_str = f"Processing: {str(folder_path)}"
+            if len(progress_str) <= maxlength:
+                progress_str = f"{progress_str}{' ' * (maxlength - len(progress_str))}"
+            else:
+                maxlength = len(progress_str)
+            print(f"\r{progress_str}", end = "\r")
             processType(folder_path, shortcut = True)
             continue
         else: 
             pass
     except:
         pass
-    print(f"\nI was unable to parse shortcut {shtcut_path}")
-    print("You will need to manually paste the target path into the file in this format:")
-    print(f"{FILE_LINE_ABS}<path-to-scenery-pack>/")
+    unparsed_registry.append(shtcut_path)
+if printed:
+    sys.stdout.write("\033[K")
 
 
 # Sort tiers alphabetically
+unsorted_registry.sort()
 customairports.sort()
 defaultairports.sort()
 prefabairports.sort()
@@ -392,37 +415,96 @@ defaultoverlays.sort()
 orthos.sort()
 meshes.sort()
 
-
 # Check to inject XP12 Global Airports
 if not globalairports:
     pass
     globalairports.append(XP12_GLOBAL_AIRPORTS)
 
-print(f"\n\nI've classified all packs other than the specified ones. ")
-print(f"Took me {time.time() - measure_time.pop()} seconds to classify.")
+
+# Display all packs that couldn't be sorted and offer to write them at the top of the file
+if unsorted_registry:
+    measure_time.append(time.time())
+    print("\nI was unable to classify some packs. I will show them formatted as per the ini:")
+    for pack in unsorted_registry:
+        pack_stripped = pack.strip('\n')
+        print(f"    {pack_stripped}")
+    unsorted_choice = input("Should I still write them into the ini? (yes/no or y/n): ").lower()
+    if unsorted_choice in ["y","yes"]:
+        print("Ok, I will write them at the top of the ini.")
+    elif unsorted_choice in ["n","no"]:
+        print("Ok, I will not write them in the ini.")
+        unsorted_registry = None
+    else:
+        print(f"Sorry, I didn't understand. I'm assuming you meant no. I will therefore not write them in the ini.")
+        unsorted_registry = None
+    unsorted_wait = time.time() - measure_time.pop()
+    print(f"Waited {unsorted_wait} seconds for your input")
+else:
+    unsorted_wait = 0
+
+
+# Display all disabled packs that couldn't be found
 if disable_registry:
     print("\nSome packs were tagged DISABLED in the old scenery_packs.ini, but could not be found.")
-    print("Probably, they were deleted or renamed. I will list them out now.")
+    print("They have probably been deleted or renamed. I will list them out now:")
     for pack in disable_registry:
-        print(pack)
+        print(f"    {pack}")
 
 
-# Check custom airport clashes using airport_registry
-print("\n\nI will now check for Custom Airport conflicts...")
+# Display all shortcuts that couldn't be read
+if unparsed_registry:
+    print("\nI was unable to parse these shortcuts:")
+    for shortcut in unparsed_registry:
+        print(f"    {shortcut}")
+    print("You will need to manually paste the target location paths into the file in this format:")
+    print(f"{FILE_LINE_ABS}<path-to-target-location>/")
+
+
+# Display time taken in this operation
+print(f"\nI've classified all packs other than the specified ones. ")
+print(f"Took me {time.time() - measure_time.pop() - unsorted_wait} seconds to classify.")
+
+
+# Check custom airport clashes using airport_registry and ask the user if they want to resolve
+print("\nI will now check for Custom Airport conflicts...")
 measure_time.append(time.time())
-conflict = False
+measure_time.append(time.time())
+conflicts = 0
+for icao in airport_registry:
+    if len(airport_registry[icao]) > 1: 
+        conflicts+=1
+if conflicts:
+    resolve_conflicts = input(f"Found {conflicts} Custom Airport conflicts. Would you like to resolve them now? (yes/no or y/n): ")
+    if resolve_conflicts in ["y","yes"]:
+        print("Ok, I will display them and resolve with your input.")
+        resolve_conflicts = True
+    elif resolve_conflicts in ["n","no"]:
+        print("Ok, I will only display them.")
+        resolve_conflicts = False
+    else:
+        print(f"Sorry, I didn't understand. I'm assuming you meant no. I will therefore only display them.")
+        resolve_conflicts = False
+    conflict_wait = time.time() - measure_time.pop()
+    print(f"Waited {conflict_wait} seconds for your input")
+else:
+    measure_time.pop()
+    resolve_conflicts = None
+
+
+# Display (and if opted for, resolve) all custom airport clashes
 for icao in airport_registry:
     if len(airport_registry[icao]) == 1: 
         continue
     print(f"\nI found {len(airport_registry[icao])} airports for {icao}.")
     print("I'll list them out with a number, the airport name as per the pack, and the pack's folder's name.")
     airport_multiple = {}
-    conflict = True
     i = 0
     for airport in airport_registry[icao]:
         airport_multiple [i] = airport[2]
-        print(f"{i}: '{airport[0]}' in '{airport[1]}'")
+        print(f"    {i}: '{airport[0]}' in '{airport[1]}'")
         i+=1
+    if not resolve_conflicts:
+        continue
     order = input("Enter the serial numbers as per the list separated by commas. I will write them in that order: ").strip(" ").split(",")
     for sl in order:
         try:
@@ -431,16 +513,19 @@ for icao in airport_registry:
             print("That didn't work. Do read the instructions if you're unsure about how to input your preferences.")
             input("No changes have been made to your files. Press enter to close")
             exit()
-if conflict:
-    print(f"Took me {time.time() - measure_time.pop()} seconds to resolve conflicts with your help.\n")
+if resolve_conflicts:
+    print(f"Took me {time.time() - measure_time.pop() - conflict_wait} seconds to resolve conflicts with your help.\n")
+elif conflicts:
+    measure_time.pop()
+    print("You may wish to manually go through the ini file for corrections.\n")
 else:
     measure_time.pop()
     print("I didn't detect any conflicts.\n")
 
 
-
 scenery_ini_path_dep = pathlib.Path(SCENERY_PATH / "scenery_packs.ini")
 scenery_ini_path_bak = pathlib.Path(f"{scenery_ini_path_dep}.bak")
+
 
 # Remove the old backup file, if present
 if scenery_ini_path_bak.exists():
@@ -458,7 +543,7 @@ print("I will now write the new scenery_packs.ini")
 
 # Print packs as sorted (ONLY FOR DEVELOPMENT OR DEBUGGING USE)
 if False:
-    debug = {"customairports":customairports, "defaultairports":defaultairports, "prefabairports":prefabairports, "globalairports":globalairports, 
+    debug = {"unsorted":unsorted_registry, "customairports":customairports, "defaultairports":defaultairports, "prefabairports":prefabairports, "globalairports":globalairports, 
          "plugins":plugins, "libraries":libraries, "customoverlays":customoverlays, "defaultoverlays":defaultoverlays, "orthos":orthos, "meshes":meshes}
     for i in debug:
         lst = debug[i]
@@ -467,8 +552,10 @@ if False:
             print(f"    {j.strip()}")
 
 
-f = open(scenery_ini_path_dep, "w+")
+f = open(scenery_ini_path_dep, "w+", encoding = "utf-8")
 f.write(FILE_BEGIN)
+if unsorted_registry:
+    f.writelines(unsorted_registry)
 f.writelines(customairports)
 f.writelines(defaultairports)
 f.writelines(prefabairports)
