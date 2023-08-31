@@ -1,4 +1,4 @@
-# Scenery Pack Organiser - XP10/11/12
+# Scenery Pack Organiser - XP10/11/12 v2.0b5
 
 Are you tired of sifting through all the packs in the Custom Scenery folder and reordering them manually?\
 Do you hate having to start and quit X-Plane just to add new scenery packs to the file so you can organise it?\
@@ -12,48 +12,66 @@ You are given a choice between using the Python script or the standalone executa
 The Python script lets you see and edit the code to suit your needs, but requires you to have additional software (namely Python and PIP) installed.\
 The executable, on the other hand, does not require any additional software. This is ideal for users who do not have Python installed or are facing problems with Python.\
 Regardless of which one you use, you can store the program anywhere you'd like.
-### Script (.py) version
-- You need to have Python3 installed. [You can get it here for all platforms](https://www.python.org/downloads/)
-    - [For macOS, you can also use Homebrew](https://docs.python-guide.org/starting/install3/osx/)
-    - For Linux, you can also use your distro's package manager
-- You need to have PIP installed
+#### Script (.py) version
+1. You need to have Python3 installed. [You can get it here for all platforms](https://www.python.org/downloads/)
+    - [For macOS, you may use Homebrew instead](https://docs.python-guide.org/starting/install3/osx/)
+    - For Linux, you should use your distro's package manager instead
+2. You need to have PIP installed
     - On Windows, PIP is automatically installed with Python3
-    - On macOS, it might differ depending on how you installed Python
-    - On Linux, you may need to install a separate package
-- Make sure both Python3 and PIP are added to PATH
+    - On Linux, you may need to install a separate package (like `python3-pip` on Ubuntu/Debian based distributions)
+3. Make sure both Python3 and PIP are added to PATH
     - On Windows, this is done by ticking the option in the installer
-    - To check on Windows, open Command Prompt and do `python --version` and `pip --version`
-    - To check on macOS and Linux, open Terminal and do `python3 --version` and `pip --version`
+    - On Linux, this should happen automatically when installing the respective packages through your package manager
+4. Check by opening Command Prompt or Terminal and doing `pip --version` and `python3 --version` or `python --version`
 <br>
 
-If you have something more elaborate set up, please ensure the following libraries are available: `glob locale os pathlib pkg_resources struct sys time`, and also `pywin32` if you're on Windows.
+There is often confusion between `python` and `python3`. Doing the above will help you decide how to invoke python when running the script. If both commands give you an output, use the one that displays the highest version number. <br>
+
+If you have something more elaborate set up, please ensure the following libraries are available: `glob locale os pathlib pkg_resources struct sys time`, and also `pywin32` if you're on Windows. 
 
 
-### Standalone executable
-You do not need any additional software installed (ie. Python and PIP) on your system if you want to use the standalone executable. Simply download the one for your OS.\
-Currently, only Windows and Linux executables are available. macOS executables and CLI install options are coming soon.
+#### Standalone executable
+You do not need any additional software installed (ie. Python and PIP) on your system if you want to use the standalone executable. Simply download the one for your OS. <br>
+
+Executables are available for Windows, macOS, and Linux. I'm planning on implementing a CLI install option in the near future. 
 
 
 ## Usage
 ### How to run
-- On Windows, you can simply doubleclick the program. This works for both the .exe and the .py script
-- On macOS, you will need to open Terminal in the folder you have the program stored.
-    - If you're using the .py script, do `python3 organiser_v2.0b4.py`
-    - Mac standalone executables are coming soon
-- On Linux, you will need to open Terminal in the folder you have the program stored
-    - If you're using the .py script, do `python3 organiser_v2.0b4.py`
-    - If you're using the executable, do `./organiser_v2.0b4`
+#### Script (.py) version
+- On Windows, you can run it simply by double-clicking. If this doesn't work, try the next method
+
+- On any platform, first open Command Prompt or Terminal and change the active directory to where the program is located.\
+Then do `python3 organiser_v2.0b5.py` or `python organiser_v2.0b5.py`.\
+To decide which one to use, refer the installation instructions.
+#### Standalone executable
+- On Windows, you can run it simply by double-clicking.\
+If this doesn't work, open Command Prompt or Terminal, change the active directory to where the program is located.\
+Then do `organiser_v2.0b5.exe`.
+
+- If Windows SmartScreen throws an error, you'll need to click on "More info", and then a "Run anyway" option will come up.\
+Use the more secure CLI install option to avoid this. (coming soon)
+
+- For macOS and Linux, open Terminal where the program is located.\
+Then do `./organiser_v2.0b5`.\
+If you run into a permission error, do `chmod +x organiser_v2.0b5` and try again.
 
 
 ### How to use
 At various stages, the program might ask you for input. Here, I'll go through them in order and explain each one.
 1. The program will try to automatically locate X-Plane. It will list out all locations it finds. To use one of those, enter the serial number as displayed in the list.\
-If this doesn't work, or if you want to use a different location, simply paste the path from your file explorer. **Do not format it as a shell path (eg. wrapping it in quotes, escaping whitespaces and backslashes, etc)**
-2. If you had disabled some scenery packs in your old scenery_packs.ini, the program will offer to retain those in the new ini. You can respond with yes/no or y/n
-3. The program checks for conflicts in your Custom Airports (based on their ICAO codes). If it finds any, it will tell you the ICAO code and list the airport names and their folder names.\
-To resolve the conflict, enter the serial numbers as shown in the list in descending order of priority (highest first, lowest last), and the program will write them in that order
-- If an existing `scenery_packs.ini` is found, it will be renamed to `scenery_packs.ini.bak`. Old backup files will be removed upon completion of the script.\
-To roll back, simply drop the `.bak` extension
+If this doesn't work, or if you want to use a different location, simply paste the path from your file explorer.\
+**Do not format it as a shell path (eg. wrapping it in quotes, escaping whitespaces and backslashes, etc)**
+
+2. If you had disabled some scenery packs in your old scenery_packs.ini, the program will offer to retain those in the new ini.
+
+3. If the program was unable to sort some scenery packs, it will display them and offer a choice to write them into the ini anyway. If yes, it will write them at the top
+
+4. If the program detects multiple airport packs for an ICAO code, it will give you a choice to prioritise them within the program
+    - It will first display the ICAO code, and then list the packs with a serial number, the airport name as per the pack, and the pack's folder's name
+    - If you opted to resolve, you will need to enter the serial numbers as shown in the list in descending order of priority (highest first, lowest last). It will write them in that order
+5. If an existing `scenery_packs.ini` is found, it will be renamed to `scenery_packs.ini.bak`. Old backup files will be removed upon completion of the script.\
+To roll back, simply drop the `.bak` extension.
 
 
 ## Features
@@ -78,9 +96,10 @@ To roll back, simply drop the `.bak` extension
 
 
 ## Credits/Changelog
-A big thank-you to [@supercoder186](https://github.com/supercoder186/), for his superb utility and encouragement.\
+A big thank-you to [@supercoder186](https://github.com/supercoder186/), for his original utility and encouragement.\
 If you would like to contribute, [here is the project GitHub](https://github.com/therectifier/SceneryPacksOrganiser/).\
-Feel free to message me on Discord - my username is **therectifier**. I'm also present in the X-Plane Community and Official servers.
+Feel free to message me on Discord - my username is **therectifier**. I'm also present in the X-Plane Community and Official servers.\
+This project is licensed under GNU GPL v2.
 
 - 1.0 - Initial Upload
 - 1.1 - UI improvement: wait for user confirmation before exiting
@@ -93,7 +112,8 @@ Feel free to message me on Discord - my username is **therectifier**. I'm also p
 - 2.0b1 - Now parse apt.dat to verify if a pack is an airport. Now sort Default below Custom Overlays. Now alphabetically sort each layer. Now support "Earth Nav data" and other non-conventional capitalisations within packs
 - 2.0b2 - Now check for Custom Airport conflicts and resolve with user input. Removed X-Plane 9 support (never worked to begin with). UI improvements: Now leave gaps in console to differentiate stages, Added timer for each stage
 - 2.0b3 - Now treat Prefab Airports as its own thing to avoid clashes with Default or Custom Airports
-- 2.0b4 - Now offer to carry over DISABLED tags from existing ini. Fixed Windows shortcut support. 
+- 2.0b4 - Now offer to carry over DISABLED tags from existing ini. Fixed Windows shortcut support
+- 2.0b5 - Now offer to write unsorted packs. Now offer a choice to resolve airport conflicts. Fixed apt.dat files unable to be read. UI improvements: List out unsorted packs in one go, Display the name of the pack currently being sorted, Indent lists for easier reading
 
 
 ## Known Issues
