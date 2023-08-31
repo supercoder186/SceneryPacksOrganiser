@@ -65,11 +65,11 @@ If this doesn't work, or if you want to use a different location, simply paste t
 
 2. If you had disabled some scenery packs in your old scenery_packs.ini, the program will offer to retain those in the new ini.
 
-3. If the program was unable to sort some scenery packs, it will display them and offer a choice to write them into the ini anyway. If yes, it will write them at the top
+3. If the program was unable to sort some scenery packs, it will display them and offer a choice to write them into the ini anyway. If yes, it will write them at the top.
 
 4. If the program detects multiple airport packs for an ICAO code, it will give you a choice to prioritise them within the program
     - It will first display the ICAO code, and then list the packs with a serial number, the airport name as per the pack, and the pack's folder's name
-    - If you opted to resolve, you will need to enter the serial numbers as shown in the list in descending order of priority (highest first, lowest last). It will write them in that order
+    - If you opted to resolve, you will need to define the priorities. To do so, go through the list and enter the serial numbers in your desired order, separated by commas. The highest priority should go first, and the lowest last
 5. If an existing `scenery_packs.ini` is found, it will be renamed to `scenery_packs.ini.bak`. Old backup files will be removed upon completion of the script.\
 To roll back, simply drop the `.bak` extension.
 
