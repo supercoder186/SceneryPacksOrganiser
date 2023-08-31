@@ -13,14 +13,14 @@ if sys.platform == "win32":
         pkg_resources.require("pywin32")
     except:
         print("I could not locate the pywin32 package. I am thus installing it for you.")
-        print("If you see an error after this, please close and restart the script.\n")
+        print("If you see an error after this or if the window abruptly closes, please restart the script.\n")
         os.system("pip install pywin32")
         print("\n")
     import win32com.client
 
 
 # State version
-print("Scenery Pack Organiser version 2.0b5\n")
+print("Scenery Pack Organiser version 2.0b6\n")
 
 
 # DEF: Expand shell paths to absolute paths
@@ -233,14 +233,16 @@ def isAirport(dirpath:pathlib.Path, dirname:str, file_line:str):
         return None
     if apt_path and dirname == "Global Airports": 
         return "Global"
+    apt_lins = None
     for codec in ('utf-8', 'charmap', 'cp1252', 'cp850'):
         try:
             apt_file = open(apt_path, "r", encoding = codec)
+            apt_lins = apt_file.readlines()
             break
         except:
             pass
     apt_type = None
-    for line in apt_file.readlines():
+    for line in apt_lins:
         if line.startswith("1 ") or line.startswith("16 ") or line.startswith("17 "):
             if str_contains(dirname, ["prefab"], casesensitive = False):
                 apt_type = "Prefab"
@@ -417,7 +419,6 @@ meshes.sort()
 
 # Check to inject XP12 Global Airports
 if not globalairports:
-    pass
     globalairports.append(XP12_GLOBAL_AIRPORTS)
 
 
