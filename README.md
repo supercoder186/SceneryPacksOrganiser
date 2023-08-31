@@ -1,4 +1,4 @@
-# Scenery Pack Organiser - XP10/11/12 v2.0b5
+# Scenery Pack Organiser - XP10/11/12 v2.0b6
 
 Are you tired of sifting through all the packs in the Custom Scenery folder and reordering them manually?\
 Do you hate having to start and quit X-Plane just to add new scenery packs to the file so you can organise it?\
@@ -42,19 +42,19 @@ Executables are available for Windows, macOS, and Linux. I'm planning on impleme
 - On Windows, you can run it simply by double-clicking. If this doesn't work, try the next method
 
 - On any platform, first open Command Prompt or Terminal and change the active directory to where the program is located.\
-Then do `python3 organiser_v2.0b5.py` or `python organiser_v2.0b5.py`.\
+Then do `python3 organiser_v2.0b6.py` or `python organiser_v2.0b6.py`.\
 To decide which one to use, refer the installation instructions.
 #### Standalone executable
 - On Windows, you can run it simply by double-clicking.\
 If this doesn't work, open Command Prompt or Terminal, change the active directory to where the program is located.\
-Then do `organiser_v2.0b5.exe`.
+Then do `organiser_v2.0b6.exe`.
 
 - If Windows SmartScreen throws an error, you'll need to click on "More info", and then a "Run anyway" option will come up.\
 Use the more secure CLI install option to avoid this. (coming soon)
 
 - For macOS and Linux, open Terminal where the program is located.\
-Then do `./organiser_v2.0b5`.\
-If you run into a permission error, do `chmod +x organiser_v2.0b5` and try again.
+Then do `./organiser_v2.0b6`.\
+If you run into a permission error, do `chmod +x organiser_v2.0b6` and try again.
 
 
 ### How to use
@@ -114,6 +114,7 @@ This project is licensed under GNU GPL v2.
 - 2.0b3 - Now treat Prefab Airports as its own thing to avoid clashes with Default or Custom Airports
 - 2.0b4 - Now offer to carry over DISABLED tags from existing ini. Fixed Windows shortcut support
 - 2.0b5 - Now offer to write unsorted packs. Now offer a choice to resolve airport conflicts. Fixed apt.dat files unable to be read. UI improvements: List out unsorted packs in one go, Display the name of the pack currently being sorted, Indent lists for easier reading
+- 2.0b6 - Hotfix for multi-codec attempts
 
 
 ## Known Issues
